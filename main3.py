@@ -8,8 +8,8 @@ inp = 784
 
 img,lbl = mnist.read(dataset = "training", path = "")
 
-img = img[:10000]
-lbl = lbl[:10000]
+img = img[:1000]
+lbl = lbl[:1000]
 
 x=[]
 for u in img:

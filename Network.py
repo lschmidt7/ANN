@@ -12,9 +12,9 @@ class Network():
         for w in range(len(architecture)-1):
             x = architecture[w]
             y = architecture[w+1]
-            wts = np.random.uniform(0.0,1.0,(y,x))
+            wts = np.random.uniform(-1.0,1.0,(y,x))
             self.weights.append(wts)
-            bs = np.random.uniform(0.0,1.0,(y))
+            bs = np.random.uniform(-1.0,1.0,(y))
             self.bias.append(bs)
             self.layers.append( np.array([[0.0]*architecture[w+1]]*3 ))
 
@@ -89,7 +89,7 @@ class Network():
             out_layer=self.sigmoid(v)
             l[1] = out_layer
             w+=1
-        print(out_layer)
+        return out_layer
 
     def show_weights(self):
         for l in range(len(self.architecture)-1):

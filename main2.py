@@ -4,8 +4,8 @@ import mnist
 
 img,lbl = mnist.read(dataset = "training", path = "")
 
-img = img[:10000]
-lbl = lbl[:10000]
+img = img[:1000]
+lbl = lbl[:1000]
 
 x=[]
 for u in img:
@@ -23,14 +23,12 @@ for a in lbl:
 y = np.array(y)
 
 net = Network((784,100,10),1)
-net.show_weights()
-net.show_bias()
-input()
-net.fit(x,y,epochs=4)
+net.fit(x,y,epochs=40)
 
 i=0
 for a in x:
     print(lbl[i])
-    net.forward(a)
+    o = net.forward(a)
+    print(o.argmax())
     i+=1
     input()
