@@ -11,7 +11,7 @@ weights = np.array([[[0.8,0.3],[-0.6,-0.4]],[[0.7,-0.8]]])
 bias = np.array([ [0.7,-0.4],[-0.3] ])
 
 #net = Network((10,5,2))
-net = Network((2,2,1),0.8)
+net = Network((2,2,2,1),0.8)
 net.fit(x,y,epochs=10000)
 
 print(net.forward([0.1,0.1]))

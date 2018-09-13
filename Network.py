@@ -11,17 +11,26 @@ class Network():
 
     def __init__(self,architecture,tr):
         self.weights = []
+        self.delta = []
         self.architecture = architecture
         self.layers = []
         self.bias = []
+        self.dbias = []
         self.tr = tr
         for w in range(len(architecture)-1):
             x = architecture[w]
             y = architecture[w+1]
+            
             wts = np.random.uniform(-1.0,1.0,(y,x))
             self.weights.append(wts)
+            dwts = np.random.uniform(-1.0,1.0,(y,x))
+            self.delta.append(dwts)
+
             bs = np.random.uniform(-1.0,1.0,(y))
             self.bias.append(bs)
+            dbs = np.random.uniform(-1.0,1.0,(y))
+            self.dbias.append(dbs)
+
             self.layers.append( np.array([[0.0]*architecture[w+1]]*2 ))
 
     def fit(self,X,Y,epochs=10):
@@ -29,7 +38,6 @@ class Network():
             err=0.0
             i=0
             for a in X:
-                tt = time.time()
                 b = Y[i]
                 w=0
                 out_layer = a
@@ -48,30 +56,36 @@ class Network():
 
                 rlayers = list(reversed(self.layers))
                 rweights = list(reversed(self.weights))
+                nlayers = len(self.layers)
 
                 #---------------------backpropagation-----------------------------
                 l=0
                 ns = len(rlayers[l][0]) # neurons in the current layer
                 
                 dv = self.dsigmoid(rlayers[l][0])
-                grad1 = -error*dv
-                delta_weights1 = -self.tr*self.mult(grad1,rlayers[l+1][1])
-                delta_bias1 = -self.tr*grad1*[1.0]*ns
+                grad = -error*dv
+                self.delta[nlayers-(l+1)] = -self.tr*self.mult(grad,rlayers[l+1][1])
+                self.dbias[nlayers-(l+1)] = -self.tr*grad*[1.0]*ns
 
                 l+=1
-                ns = len(rlayers[l][0]) # neurons in the current layer
+                while(l<nlayers):
+                    
+                    ns = len(rlayers[l][0]) # neurons in the current layer
 
-                dv2 = self.dsigmoid(rlayers[l][0])
-                gr = np.array([grad1])
-                grad2 = dv2*sum(gr.T*rweights[l-1])
-                delta_weights2 = -self.tr*self.mult(grad2,a)
-                delta_bias2 = -self.tr*grad2*[1.0]*ns
+                    dv = self.dsigmoid(rlayers[l][0])
+                    gr = np.array([grad])
+                    grad = dv*sum(gr.T*rweights[l-1])
+                    if(l<nlayers-1):
+                        out_layer = rlayers[l+1][1]
+                    else:
+                        out_layer = a
+                    self.delta[nlayers-(l+1)] = -self.tr*self.mult(grad,out_layer)
+                    self.dbias[nlayers-(l+1)] = -self.tr*grad*[1.0]*ns
+                    l+=1
 
-                self.weights[1] += delta_weights1
-                self.bias[1]    += delta_bias1
-
-                self.weights[0] += delta_weights2
-                self.bias[0]    += delta_bias2
+                for x in range(nlayers):
+                    self.weights[x] += self.delta[x]
+                    self.bias[x]    += self.dbias[x]
                 #---------------------backpropagation-----------------------------
                 i+=1
             print("epoch "+str(ep)+", error: "+str(err/len(X)))
