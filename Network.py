@@ -1,6 +1,6 @@
 #-----------------------------------------------#
 # autor: Leonardo de Abreu Schmidt              #
-# Network: neural network class                 #
+# Network: artificial neural network class      #
 #-----------------------------------------------#
 
 import numpy as np
