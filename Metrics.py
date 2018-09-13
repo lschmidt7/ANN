@@ -9,3 +9,9 @@ class Metrics():
             if(y_pred[x] == y_true[x]):
                 hit+=1
         return float(hit)/len(y_true)
+    
+    def precision(self):
+        pass
+
+    def recall(self):
+        pass

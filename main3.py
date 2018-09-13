@@ -34,5 +34,5 @@ model.add(Dense(10, activation='sigmoid'))
 model.compile(loss='mse', optimizer='sgd', metrics=['accuracy'])
 
 t = time.time()
-model.fit(x,y, epochs=10, batch_size=1)
-print(time.time()-t)
+model.fit(x,y, epochs=40, batch_size=1)
+print("\nTraining time: "+str(time.time()-t))

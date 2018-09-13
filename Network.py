@@ -17,6 +17,8 @@ class Network():
         self.bias = []
         self.dbias = []
         self.tr = tr
+        print(self.architecture[-1:])
+        self.fme = (1.0/self.architecture[-1:][0])
         for w in range(len(architecture)-1):
             x = architecture[w]
             y = architecture[w+1]
@@ -37,6 +39,7 @@ class Network():
         for ep in range(epochs):
             err=0.0
             i=0
+            hits=0
             for a in X:
                 b = Y[i]
                 w=0
@@ -50,8 +53,10 @@ class Network():
                 #---------------------forward-------------------------------------
 
                 #--------------------------error----------------------------------
+                if(np.argmax(out_layer)==np.argmax(b)):
+                    hits+=1
                 error = b-out_layer
-                err += (0.1*sum(error*error))
+                err += (self.fme*sum(error*error))
                 #--------------------------error----------------------------------
 
                 rlayers = list(reversed(self.layers))
@@ -60,7 +65,7 @@ class Network():
 
                 #---------------------backpropagation-----------------------------
                 l=0
-                ns = len(rlayers[l][0]) # neurons in the current layer
+                ns = len(rlayers[l][0])
                 
                 dv = self.dsigmoid(rlayers[l][0])
                 grad = -error*dv
@@ -70,7 +75,7 @@ class Network():
                 l+=1
                 while(l<nlayers):
                     
-                    ns = len(rlayers[l][0]) # neurons in the current layer
+                    ns = len(rlayers[l][0])
 
                     dv = self.dsigmoid(rlayers[l][0])
                     gr = np.array([grad])
@@ -88,7 +93,7 @@ class Network():
                     self.bias[x]    += self.dbias[x]
                 #---------------------backpropagation-----------------------------
                 i+=1
-            print("epoch "+str(ep)+", error: "+str(err/len(X)))
+            print("epoch "+str(ep)+", error: "+str(err/len(X))+", accuracy: "+str(hits/len(X)))
 
     def mult(self,v,u):
         h=[u]*len(v)
