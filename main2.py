@@ -1,6 +1,7 @@
 from Network import Network
 import numpy as np
 import mnist
+import time
 
 img,lbl = mnist.read(dataset = "training", path = "")
 
@@ -23,12 +24,14 @@ for a in lbl:
 y = np.array(y)
 
 net = Network((784,100,10),1)
-net.fit(x,y,epochs=40)
+t = time.time()
+net.fit(x,y,epochs=10)
+print(time.time()-t)
 
-i=0
+""" i=0
 for a in x:
     print(lbl[i])
     o = net.forward(a)
     print(o.argmax())
     i+=1
-    input()
+    input() """

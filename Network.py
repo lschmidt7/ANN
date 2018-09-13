@@ -1,5 +1,11 @@
+#-----------------------------------------------#
+# autor: Leonardo de Abreu Schmidt              #
+# Network: neural network class                 #
+#-----------------------------------------------#
+
 import numpy as np
 import math
+import time
 
 class Network():
 
@@ -16,22 +22,14 @@ class Network():
             self.weights.append(wts)
             bs = np.random.uniform(-1.0,1.0,(y))
             self.bias.append(bs)
-            self.layers.append( np.array([[0.0]*architecture[w+1]]*3 ))
-
-    def soma(self,v):
-        v1 = []
-        for x in v:
-            sm=0
-            for y in x:
-                sm+=y
-            v1.append(sm)
-        return v1
+            self.layers.append( np.array([[0.0]*architecture[w+1]]*2 ))
 
     def fit(self,X,Y,epochs=10):
         for ep in range(epochs):
             err=0.0
             i=0
             for a in X:
+                tt = time.time()
                 b = Y[i]
                 w=0
                 out_layer = a
@@ -42,10 +40,15 @@ class Network():
                     l[1] = out_layer
                     w+=1
                 #---------------------forward-------------------------------------
+
+                #--------------------------error----------------------------------
                 error = b-out_layer
                 err += (0.1*sum(error*error))
+                #--------------------------error----------------------------------
+
                 rlayers = list(reversed(self.layers))
                 rweights = list(reversed(self.weights))
+
                 #---------------------backpropagation-----------------------------
                 l=0
                 ns = len(rlayers[l][0]) # neurons in the current layer
@@ -53,10 +56,7 @@ class Network():
                 dv = self.dsigmoid(rlayers[l][0])
                 grad1 = -error*dv
                 delta_weights1 = -self.tr*self.mult(grad1,rlayers[l+1][1])
-                delta_bias1 = -self.tr*grad1*[1.0]*ns # cuidar aqui
-
-                self.weights[1] += delta_weights1
-                self.bias[1]    += delta_bias1
+                delta_bias1 = -self.tr*grad1*[1.0]*ns
 
                 l+=1
                 ns = len(rlayers[l][0]) # neurons in the current layer
@@ -65,7 +65,10 @@ class Network():
                 gr = np.array([grad1])
                 grad2 = dv2*sum(gr.T*rweights[l-1])
                 delta_weights2 = -self.tr*self.mult(grad2,a)
-                delta_bias2 = -self.tr*grad2*[1.0]*ns # cuidar aqui
+                delta_bias2 = -self.tr*grad2*[1.0]*ns
+
+                self.weights[1] += delta_weights1
+                self.bias[1]    += delta_bias1
 
                 self.weights[0] += delta_weights2
                 self.bias[0]    += delta_bias2
@@ -74,22 +77,19 @@ class Network():
             print("epoch "+str(ep)+", error: "+str(err/len(X)))
 
     def mult(self,v,u):
-        h=[]
-        for x in v:
-            h.append(x*u)
+        h=[u]*len(v)
+        for x in range(len(v)):
+            h[x]=v[x]*u
         h = np.array(h)
         return h
 
     def forward(self,a):
-        out_layer=a
         w=0
         for l in self.layers:
-            l[0] = sum((out_layer*self.weights[w]).T)+self.bias[w]
-            v=l[0]
-            out_layer=self.sigmoid(v)
-            l[1] = out_layer
+            l[0] = sum((a*self.weights[w]).T)+self.bias[w]
+            a=self.sigmoid(l[0])
             w+=1
-        return out_layer
+        return a
 
     def show_weights(self):
         for l in range(len(self.architecture)-1):

@@ -3,6 +3,7 @@ from keras.layers import Dense
 import keras
 import numpy as np
 import mnist
+import time
 
 inp = 784
 
@@ -31,4 +32,7 @@ model.add(Dense(100, input_dim=inp, activation='sigmoid'))
 model.add(Dense(10, activation='sigmoid'))
 
 model.compile(loss='mse', optimizer='sgd', metrics=['accuracy'])
-model.fit(x,y, epochs=40, batch_size=1)
+
+t = time.time()
+model.fit(x,y, epochs=10, batch_size=1)
+print(time.time()-t)
